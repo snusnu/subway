@@ -23,14 +23,15 @@ DuplicateMethodCall:
   allow_calls: []
 FeatureEnvy:
   enabled: true
-  exclude: []
+  exclude:
+  - Subway::Router::Builder::HttpRouter#register # missing 3rd party API
 IrresponsibleModule:
   enabled: true
   exclude: []
 LongParameterList:
   enabled: true
   exclude: []
-  max_params: 2
+  max_params: 3
   overrides:
     initialize:
       max_params: 3
@@ -40,7 +41,8 @@ LongYieldList:
   max_params: 2
 NestedIterators:
   enabled: true
-  exclude: []
+  exclude:
+  - Subway::Routes#extended # 3
   max_allowed_nesting: 1
   ignore_iterators: []
 NilCheck:
@@ -62,7 +64,8 @@ TooManyStatements:
   enabled: true
   exclude:
   - each
-  max_statements: 2
+  - Subway::Router::Builder::HttpRouter#register # 4
+  max_statements: 3
 UncommunicativeMethodName:
   enabled: true
   exclude: []
@@ -88,7 +91,8 @@ UncommunicativeParameterName:
   accept: []
 UncommunicativeVariableName:
   enabled: true
-  exclude: []
+  exclude:
+  - "r" # used in routes block
   reject:
   - !ruby/regexp /^.$/
   - !ruby/regexp /[0-9]$/

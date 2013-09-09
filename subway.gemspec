@@ -15,9 +15,17 @@ Gem::Specification.new do |gem|
   gem.files            = `git ls-files`.split("\n")
   gem.test_files       = `git ls-files -- {spec}/*`.split("\n")
   gem.extra_rdoc_files = %w[LICENSE README.md TODO.md]
+  gem.license          = 'MIT'
 
-  gem.add_dependency 'rack',       '~> 1.5.2'
-  gem.add_dependency 'substation', '~> 0.0.9'
+  gem.add_dependency 'rack',        '~> 1.5.2'
+  gem.add_dependency 'substation',  '~> 0.0.10'
+  gem.add_dependency 'request',     '~> 0.0.4'
+  gem.add_dependency 'response',    '~> 0.0.3'
+  gem.add_dependency 'anima',       '~> 0.1.0'
+  gem.add_dependency 'mustache',    '~> 0.99.4'
+  gem.add_dependency 'multi_json',  '~> 1.8.0'
+  gem.add_dependency 'rbnacl',      '~> 1.1.0'
+  gem.add_dependency 'bcrypt-ruby', '~> 3.1.2'
 
   gem.add_development_dependency 'bundler', '~> 1.3.5'
 end
