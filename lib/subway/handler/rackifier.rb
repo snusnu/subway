@@ -7,6 +7,7 @@ module Subway
     class Rackifier
 
       extend  Handler
+      include Substation::Processor::Outgoing
       include Concord.new(:response)
 
       DECOMPOSER = ->(response) { response.data }

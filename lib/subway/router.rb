@@ -15,5 +15,9 @@ module Subway
     def url(name, *args)
       handler.url(name, *args)
     end
+
+    def path(name, *args)
+      handler.path(name, *args)
+    end
   end # class Router
 end # module Subway

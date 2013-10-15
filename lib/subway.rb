@@ -13,10 +13,13 @@ require 'bcrypt'
 module Subway
 
   # Represent an undefined argument
-  Undefined = Object.new.freeze
+  Undefined = Class.new.freeze
 
   # An empty hash useful for (default} parameters
   EMPTY_HASH = {}.freeze
+
+  # An empty frozen string
+  EMPTY_STRING = ''.freeze
 
 end # module Subway
 
@@ -30,16 +33,18 @@ require 'subway/router/builder'
 require 'subway/router/builder/http_router'
 require 'subway/routes'
 require 'subway/mustache/view'
+require 'subway/request'
+require 'subway/response'
+require 'subway/session'
 require 'subway/handler'
-require 'subway/handler/applifier'
 require 'subway/handler/rackifier'
 require 'subway/handler/responder'
 require 'subway/handler/responder/html'
 require 'subway/handler/responder/json'
+require 'subway/handler/redirector'
+require 'subway/handler/redirector/found'
 require 'subway/handler/renderer'
 require 'subway/handler/renderer/mustache'
-require 'subway/handler/serializer'
-require 'subway/handler/serializer/json'
 require 'subway/handler/deserializer'
 require 'subway/handler/deserializer/json'
 require 'subway/secret_box'

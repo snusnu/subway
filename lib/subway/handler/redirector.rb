@@ -3,8 +3,8 @@
 module Subway
   module Handler
 
-    # Abstract baseclass for turning a {Response} into a HTTP response
-    class Responder
+    # Abstract baseclass for constructing HTTP redirect responses
+    class Redirector
 
       extend  Handler
       include Equalizer.new(:response)
@@ -15,12 +15,12 @@ module Subway
       attr_reader :response
       protected   :response
 
-      attr_reader :body
-      private     :body
+      attr_reader :data
+      private     :data
 
       def initialize(response)
         @response = response
-        @body     = @response.data
+        @data     = @response.data
       end
     end
   end

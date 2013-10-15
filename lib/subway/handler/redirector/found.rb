@@ -2,13 +2,13 @@
 
 module Subway
   module Handler
-    class Responder
+    class Redirector
 
       # Builds an HTML response
-      class HTML < self
+      class Found < self
 
         def call
-          ::Response::HTML.build(body)
+          Response.new(::Response::Redirect::Found.build(data.location), data)
         end
       end
     end
