@@ -23,6 +23,7 @@ module Subway
 
 end # module Subway
 
+require 'subway/utils'
 require 'subway/http'
 require 'subway/route'
 require 'subway/route/config'
