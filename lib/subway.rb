@@ -21,6 +21,9 @@ module Subway
   # An empty frozen string
   EMPTY_STRING = ''.freeze
 
+  # An empty frozen array
+  EMPTY_ARRAY = [].freeze
+
 end # module Subway
 
 require 'subway/utils'
@@ -50,6 +53,7 @@ require 'subway/handler/renderer'
 require 'subway/handler/renderer/mustache'
 require 'subway/handler/deserializer'
 require 'subway/handler/deserializer/json'
+require 'subway/handler/cookie/loader'
 require 'subway/handler/cookie/dumper'
 require 'subway/handler/sanitizer'
 require 'subway/secret_box'
