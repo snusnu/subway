@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'anima',       '~> 0.1.0'
   gem.add_dependency 'mustache',    '~> 0.99.4'
   gem.add_dependency 'multi_json',  '~> 1.8.0'
-  gem.add_dependency 'rbnacl',      '~> 1.1.0'
+  gem.add_dependency 'rbnacl',      '~> 2.0.0'
   gem.add_dependency 'bcrypt-ruby', '~> 3.1.2'
 
   gem.add_development_dependency 'bundler', '~> 1.3.5'

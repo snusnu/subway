@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rbnacl',     '~> 1.1.0',  git: 'https://github.com/cryptosphere/rbnacl.git'
 gem 'anima',      '~> 0.1.0',  git: 'https://github.com/mbj/anima.git'
 
 gem 'substation', '~> 0.0.10', git: 'https://github.com/snusnu/substation.git'
