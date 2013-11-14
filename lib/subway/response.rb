@@ -41,10 +41,6 @@ module Subway
       include Adamantium
       include AbstractType
 
-      def to_h
-        self.class.attributes_hash(self)
-      end
-
       def self.build(attributes)
         new({ :cookie => EMPTY_STRING }.merge(attributes))
       end
