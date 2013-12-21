@@ -8,6 +8,8 @@ require 'mustache'
 require 'multi_json'
 require 'rbnacl'
 require 'bcrypt'
+require 'inflecto'
+require 'lupo'
 
 # Support code for running substation apps on rack
 module Subway
@@ -58,3 +60,4 @@ require 'subway/handler/cookie/dumper'
 require 'subway/handler/sanitizer'
 require 'subway/secret_box'
 require 'subway/password'
+require 'subway/facade'
