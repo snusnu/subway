@@ -20,6 +20,8 @@ module Subway
 
     def self.match?(plaintext, ciphertext)
       coerce(ciphertext).match?(plaintext)
+    rescue BCrypt::Errors::InvalidHash
+      false
     end
 
     def match?(password)
