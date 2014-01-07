@@ -34,6 +34,11 @@ module Subway
     end
     memoize :cookie
 
+    def to_h
+      data.to_h
+    end
+    memoize :to_h
+
     class Authenticated < self
 
       def authorize
