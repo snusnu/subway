@@ -3,20 +3,57 @@
 module Subway
 
   class Facade
-
     include Lupo.collection(:scopes)
+
+    def scope(name, &block)
+      Proxy.build(scopes[name], &block)
+    end
+
+    class Proxy
+      def self.build(scope, &block)
+        proxy = new(scope)
+        proxy.instance_eval(&block) if block
+        proxy
+      end
+
+      def initialize(scope)
+        @name, @dispatcher = scope.name, scope.dispatcher
+      end
+
+      private
+
+      def method_missing(name, *args, &block)
+        action = :"#{@name}_#{name}"
+        if @dispatcher.include?(action)
+          @dispatcher.call(action, *args, &block)
+        else
+          super
+        end
+      end
+
+      def respond_to_missing?(name)
+        super || @dispatcher.include?(name)
+      end
+    end # Proxy
 
     class Definition
       include Lupo.collection(:scopes)
 
-      def self.new(scopes = [])
-        super(scopes)
+      def self.new(scopes = EMPTY_HASH)
+        super(scopes.dup)
       end
 
       def register(name, environment, options = Scope::Options::DEFAULT, &block)
-        scopes << Scope.build(name, environment, options, &block)
+        scopes[name] = Scope.build(name, environment, options, &block)
       end
 
+      def facade
+        Facade.new(self)
+      end
+
+      def [](name)
+        scopes.fetch(name) { raise UnknownFacadeScope.new(name) }
+      end
     end # Definition
 
     class Scope
@@ -47,6 +84,7 @@ module Subway
 
       attr_reader :name
       attr_reader :actions
+      attr_reader :dispatcher
 
       attr_reader :environment
       protected   :environment
@@ -60,6 +98,7 @@ module Subway
       def initialize(name, environment, options)
         @name            = name
         @environment     = environment
+        @dispatcher      = @environment.dispatcher
         @base            = options.base
         @exception_chain = options.on_exception
         @actions         = []
