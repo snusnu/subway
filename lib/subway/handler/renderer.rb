@@ -12,10 +12,6 @@ module Subway
       include Concord.new(:view)
       include AbstractType
 
-      DECOMPOSER = ->(response) { response.data }
-      COMPOSER   = ->(response, output) { output }
-      EXECUTOR   = Substation::Processor::Executor.new(DECOMPOSER, COMPOSER)
-
       abstract_method :call
 
     end

@@ -10,10 +10,6 @@ module Subway
       include Substation::Processor::Outgoing
       include Concord.new(:response)
 
-      DECOMPOSER = ->(response) { response.data }
-      COMPOSER   = ->(response, output) { output }
-      EXECUTOR   = Substation::Processor::Executor.new(DECOMPOSER, COMPOSER)
-
       def call
         response.to_rack_response
       end
