@@ -23,7 +23,7 @@ module Subway
       private
 
       def method_missing(name, *args, &block)
-        action = :"#{@name}_#{name}"
+        action = action_name(name)
         if @dispatcher.include?(action)
           @dispatcher.call(action, *args, &block)
         else
@@ -32,7 +32,11 @@ module Subway
       end
 
       def respond_to_missing?(name)
-        super || @dispatcher.include?(name)
+        super || @dispatcher.include?(action_name(name))
+      end
+
+      def action_name(name)
+        :"#{@name}_#{name}"
       end
     end # Proxy
 
