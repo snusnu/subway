@@ -18,8 +18,8 @@ module Subway
           r = handler.add(route.path, route.options)
           r.name = name
           r.add_request_method(route.request_method.upcase)
-          r.to { |env|
-            dispatcher.call(name, env).output
+          r.to { |rack_env|
+            dispatcher.call(name, Request.coerce(rack_env)).output
           }
         end
       end # class HttpRouter
