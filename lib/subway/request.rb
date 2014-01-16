@@ -15,6 +15,11 @@ module Subway
       false
     end
 
+    def params
+      path_params.merge(query_params)
+    end
+    memoize :params
+
     def path_params
       raw.rack_env[ROUTER_PARAMS_RACK_ENV_KEY]
     end
@@ -43,6 +48,10 @@ module Subway
 
       include anima.add(:session)
 
+      def prepared(params)
+        Prepared.new(to_h.merge(params: params))
+      end
+
       def authenticated?
         true
       end
@@ -51,5 +60,9 @@ module Subway
         session.cookie
       end
     end # class Authenticated
+
+    class Prepared < Authenticated
+      include anima.add(:params)
+    end
   end # class Request
 end # module Subway
