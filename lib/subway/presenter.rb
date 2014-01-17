@@ -7,6 +7,13 @@ module Subway
     include Concord.new(:data)
     include Adamantium::Flat
 
+    def self.group(name, klass = nil)
+      define_method(name) do
+        (klass || self.class::Collection).new(super())
+      end
+      memoize(name)
+    end
+
     def method_missing(method, *args, &block)
       @data.send(method, *args, &block)
     end
