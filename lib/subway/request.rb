@@ -48,8 +48,8 @@ module Subway
 
       include anima.add(:session)
 
-      def prepared(params)
-        Prepared.new(to_h.merge(params: params))
+      def sanitized(params)
+        Sanitized.new(to_h.merge(params: params))
       end
 
       def authenticated?
@@ -61,7 +61,7 @@ module Subway
       end
     end # class Authenticated
 
-    class Prepared < Authenticated
+    class Sanitized < Authenticated
       include anima.add(:params)
     end
   end # class Request
