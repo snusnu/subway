@@ -12,17 +12,10 @@ module Subway
       end
     end
 
-    include AbstractType
-    include Concord::Public.new(:actor, :data, :serializer)
+    include Concord.new(:actor, :data, :serializer)
     include Adamantium
 
-    def authenticated?
-      false
-    end
-
-    def authorized?
-      false
-    end
+    public :actor
 
     def serialize
       cookie.to_s
@@ -30,7 +23,7 @@ module Subway
     memoize :serialize
 
     def cookie
-      serializer.call(data.to_h)
+      serializer.call(to_h)
     end
     memoize :cookie
 
@@ -39,21 +32,5 @@ module Subway
     end
     memoize :to_h
 
-    class Authenticated < self
-
-      def authorize
-        Authorized.new(actor, data)
-      end
-
-      def authenticated?
-        true
-      end
-    end # class Authenticated
-
-    class Authorized < Authenticated
-      def authorized?
-        true
-      end
-    end # class Authorized
   end # class Session
 end # module Subway
