@@ -7,8 +7,13 @@ module Subway
       include Concord.new(:name, :attributes, :box)
 
       def call(data)
-        cookie = Cookie.new(name, MultiJson.dump(data))
-        Cookie::Header.new(cookie.encrypt(box).encode, attributes)
+        Cookie::Header.new(cookie(data).encrypt(box).encode, attributes)
+      end
+
+      private
+
+      def cookie(data)
+        Cookie.new(name, MultiJson.dump(data))
       end
     end
 
