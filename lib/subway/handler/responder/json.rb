@@ -8,23 +8,31 @@ module Subway
       class JSON < self
 
         def call
-          Response.new(::Response::JSON.build(json_body), body)
+          Response.new(http_response, body)
         end
 
         private
 
-        def json_body
-          MultiJson.dump(body.to_h)
+        def http_response
+          ::Response::JSON.build(MultiJson.dump(data))
+        end
+
+        def data
+          body.to_h
         end
 
         class NotAuthorized < self
-          def call
+          private
+
+          def http_response
             super.with_status(::Response::Status::NOT_AUTHORIZED)
           end
         end
 
         class Forbidden < self
-          def call
+          private
+
+          def http_response
             super.with_status(::Response::Status::FORBIDDEN)
           end
         end

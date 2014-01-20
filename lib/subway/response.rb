@@ -5,10 +5,6 @@ module Subway
 
     public :data
 
-    def with_status(status)
-      new(http.with_status(status))
-    end
-
     def with_cookie
       new(http.with_cookie(data.cookie))
     end
