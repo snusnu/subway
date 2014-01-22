@@ -36,6 +36,14 @@ module Subway
             super.with_status(::Response::Status::FORBIDDEN)
           end
         end
+
+        class BadRequest < self
+          private
+
+          def http_response
+            super.with_status(::Response::Status::BAD_REQUEST)
+          end
+        end
       end
     end
   end
