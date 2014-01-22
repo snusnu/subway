@@ -90,11 +90,11 @@ module Subway
     end
 
     def first_page
-      current_page - window > 0 ? current_page - window : 1
+      (page = current_page - window) > 0 ? page : 1
     end
 
     def last_page
-      current_page + window <= max_page ? current_page + window : max_page
+      (page = current_page + window) <= max_page ? page : max_page
     end
 
     def first_page?
