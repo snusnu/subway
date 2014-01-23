@@ -11,6 +11,7 @@ gem 'request',    '~> 0.0.4',  git: 'https://github.com/snusnu/request.git',    
 gem 'response',   '~> 0.0.3',  git: 'https://github.com/snusnu/response.git',   :branch => 'cookie'
 gem 'cookie',     '~> 0.0.1',  git: 'https://github.com/snusnu/cookie.git',     :branch => 'master'
 gem 'lupo',       '~> 0.0.1',  git: 'https://github.com/snusnu/lupo.git',       :branch => 'master'
+gem 'procto',     '~> 0.0.2',  git: 'https://github.com/snusnu/procto.git',     :branch => 'master'
 
 group :development do
   gem 'devtools', git: 'https://github.com/rom-rb/devtools.git', branch: 'master'

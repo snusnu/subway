@@ -10,6 +10,7 @@ require 'rbnacl'
 require 'bcrypt'
 require 'inflecto'
 require 'lupo'
+require 'procto'
 
 # Support code for running substation apps on rack
 module Subway
