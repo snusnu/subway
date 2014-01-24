@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'anima',      '~> 0.2.0',  git: 'https://github.com/mbj/anima.git'
 gem 'anima',      '~> 0.2.0',  git: 'https://github.com/mbj/anima.git',         :branch => 'master'
+gem 'morpher',    '~> 0.0.1',  git: 'https://github.com/mbj/morpher.git',       :branch => 'merge-inverse'
 
 gem 'substation', '~> 0.0.10', git: 'https://github.com/snusnu/substation.git', :branch => 'master'
 gem 'request',    '~> 0.0.4',  git: 'https://github.com/snusnu/request.git',    :branch => 'cookie'

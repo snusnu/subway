@@ -11,6 +11,7 @@ require 'bcrypt'
 require 'inflecto'
 require 'lupo'
 require 'procto'
+require 'morpher'
 
 # Support code for running substation apps on rack
 module Subway
@@ -47,6 +48,7 @@ require 'subway/presenter'
 require 'subway/pager'
 require 'subway/page'
 require 'subway/handler'
+require 'subway/handler/morpher'
 require 'subway/handler/validator'
 require 'subway/handler/responder'
 require 'subway/handler/responder/html'
