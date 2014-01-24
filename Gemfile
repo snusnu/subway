@@ -2,20 +2,26 @@
 
 source 'https://rubygems.org'
 
+SNUSNU = 'https://github.com/snusnu'.freeze
+MBJ    = 'https://github.com/mbj'.freeze
+ROM_RB = 'https://github.com/rom-rb'.freeze
+
+MASTER = 'master'.freeze
+
 gemspec
 
-gem 'anima',      '~> 0.2.0',  git: 'https://github.com/mbj/anima.git',         :branch => 'master'
-gem 'morpher',    '~> 0.0.1',  git: 'https://github.com/mbj/morpher.git',       :branch => 'master'
+gem 'anima',      git: "#{MBJ}/anima.git",         branch: MASTER
+gem 'morpher',    git: "#{MBJ}/morpher.git",       branch: MASTER
 
-gem 'substation', '~> 0.0.10', git: 'https://github.com/snusnu/substation.git', :branch => 'master'
-gem 'request',    '~> 0.0.4',  git: 'https://github.com/snusnu/request.git',    :branch => 'cookie'
-gem 'response',   '~> 0.0.3',  git: 'https://github.com/snusnu/response.git',   :branch => 'cookie'
-gem 'cookie',     '~> 0.0.1',  git: 'https://github.com/snusnu/cookie.git',     :branch => 'master'
-gem 'lupo',       '~> 0.0.1',  git: 'https://github.com/snusnu/lupo.git',       :branch => 'master'
-gem 'procto',     '~> 0.0.2',  git: 'https://github.com/snusnu/procto.git',     :branch => 'master'
+gem 'substation', git: "#{SNUSNU}/substation.git", branch: MASTER
+gem 'request',    git: "#{SNUSNU}/request.git",    branch: 'cookie'
+gem 'response',   git: "#{SNUSNU}/response.git",   branch: 'cookie'
+gem 'cookie',     git: "#{SNUSNU}/cookie.git",     branch: MASTER
+gem 'lupo',       git: "#{SNUSNU}/lupo.git",       branch: MASTER
+gem 'procto',     git: "#{SNUSNU}/procto.git",     branch: MASTER
 
 group :development do
-  gem 'devtools', git: 'https://github.com/rom-rb/devtools.git', branch: 'master'
+  gem 'devtools', git: "#{ROM_RB}/devtools.git",    branch: MASTER
 end
 
 # added by devtools
