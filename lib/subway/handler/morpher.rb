@@ -5,6 +5,13 @@ module Subway
 
     class Morpher
 
+      module Helper
+
+        def s(type, *children)
+          ::Morpher::NodeHelpers.s(type, *children)
+        end
+      end
+
       class Proxy
 
         include Concord.new(:evaluator)
