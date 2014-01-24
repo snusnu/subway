@@ -10,6 +10,15 @@ module Subway
         def s(type, *children)
           ::Morpher::NodeHelpers.s(type, *children)
         end
+
+        def mapper(model, attributes, defaults = EMPTY_HASH)
+          s(:block,
+            s(:guard, s(:primitive, Hash)),
+            s(:merge, defaults),
+            s(:hash_transform, *attributes),
+            s(:anima_load, model)
+          )
+        end
       end
 
       class Proxy
