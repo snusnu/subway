@@ -9,10 +9,16 @@ module Subway
     class Renderer
 
       extend  Handler
-      include Concord.new(:view)
       include AbstractType
 
       abstract_method :call
+
+      attr_reader :view
+      private     :view
+
+      def initialize(response)
+        @view = response.data
+      end
 
     end
   end
