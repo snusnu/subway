@@ -40,6 +40,20 @@ module Subway
     end
     memoize :body
 
+    # TODO
+    #
+    # Try refactoring the need for this away,
+    # currently our base action assigns
+    #
+    #   @actor = request.input.actor
+    #
+    # Alternatively, think about being able to
+    # inject an Actor::Unknown
+    #
+    def actor
+      nil
+    end
+
     def authenticated(session)
       Authenticated.new(:raw => raw, :session => session)
     end
@@ -58,6 +72,10 @@ module Subway
 
       def session_cookie
         session.cookie
+      end
+
+      def actor
+        session.actor
       end
     end # class Authenticated
 
