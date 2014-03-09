@@ -7,17 +7,15 @@ module Subway
 
       module Helper
 
-        def s(type, *children)
-          ::Morpher::NodeHelpers.s(type, *children)
-        end
+        include ::Morpher::NodeHelpers
 
         def mapper(model, attributes, defaults = EMPTY_HASH)
           s(:block,
             s(:guard, s(:primitive, Hash)),
             s(:merge, defaults),
             s(:hash_transform, *attributes),
-            s(:anima_load, model)
-          )
+            s(:load_attribute_hash, s(:param, model))
+           )
         end
       end
 
@@ -49,7 +47,7 @@ module Subway
       end # Proxy
 
       def self.evaluator(node)
-        Proxy.new(::Morpher.evaluator(node))
+        Proxy.new(::Morpher.compile(node))
       end
 
     end # Morpher
