@@ -8,25 +8,11 @@ module Subway
 
           class Primitive < self
 
-            class Processed < self
+            private
 
-              attr_reader :processor
-
-              def initialize(attribute, environment)
-                super
-                options    = attribute.options
-                @processor = environment.processor(attribute.processor, options)
-              end
-            end # Processed
-
-            def call
-              s(:key_symbolize, name, processor)
+            def node
+              environment.processor(attribute.processor, attribute.options)
             end
-
-            def processor
-              s(:input) # don't process input
-            end
-
           end # Primitive
         end # Attribute
       end # Builder

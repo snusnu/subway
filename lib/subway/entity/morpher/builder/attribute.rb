@@ -11,14 +11,20 @@ module Subway
           include Adamantium::Flat
           include ::Morpher::NodeHelpers
 
-          def self.call(attribute, environment)
-            new(attribute, environment).call
+          def self.call(attribute, environment, builder)
+            new(attribute, environment, builder).call
           end
 
-          abstract_method :call
+          abstract_method :node
+
+          attr_reader :attribute
+          private     :attribute
 
           attr_reader :name
           private     :name
+
+          attr_reader :options
+          private     :options
 
           attr_reader :environment
           private     :environment
@@ -32,13 +38,29 @@ module Subway
           attr_reader :models
           private     :models
 
-          def initialize(attribute, environment)
-            @attribute   = attribute
-            @name        = attribute.name
-            @environment = environment
-            @definitions = environment.definitions
-            @processors  = environment.processors
-            @models      = environment.models
+          attr_reader :default_options
+          private     :default_options
+
+          attr_reader :builder
+          private     :builder
+
+          def initialize(attribute, environment, builder)
+            @attribute       = attribute
+            @name            = attribute.name
+            @options         = attribute.options
+            @environment     = environment
+            @definitions     = environment.definitions
+            @processors      = environment.processors
+            @models          = environment.models
+            @default_options = environment.default_options
+            @builder         = builder
+
+            @old_key = attribute.old_key
+            @new_key = attribute.new_key
+          end
+
+          def call
+            s(:key_transform, @old_key, @new_key, node)
           end
 
         end # Attribute

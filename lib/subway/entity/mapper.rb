@@ -5,7 +5,7 @@ module Subway
     class Mapper
 
       def self.build(definition, environment)
-        new(Morpher.build(definition, environment))
+        new(Morpher.object_mapper(definition, environment))
       end
 
       attr_reader :loader

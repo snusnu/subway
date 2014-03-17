@@ -26,10 +26,10 @@ describe 'entity mapping' do
 
     # (2) Define a new registry of entity definitions
 
-    registry = Subway::Entity::Definition::Registry.build do
+    registry = Subway::Entity::Definition::Registry.build(key: :symbolize) do
 
       register(:contact) do
-        map :email, :String
+        map :email, :String, from: :email_address
         map :phone, :String
       end
 
@@ -49,7 +49,7 @@ describe 'entity mapping' do
         map :name,   :String
         map :gender, :Gender
 
-        wrap :contact
+        wrap :contact, from: :profile
 
         wrap :account do
           map :login,    :String
@@ -58,12 +58,12 @@ describe 'entity mapping' do
 
         group :tasks, entity: :task
 
-        group :addresses, entity: :address do
+        group :addresses, entity: :address, from: :residences do
           map :street,  :String
           map :city,    :String
           map :country, :String
 
-          group :tags, entity: :tag do
+          group :tags, entity: :tag, from: :categories do
             map :name, :String
           end
         end
@@ -102,29 +102,61 @@ describe 'entity mapping' do
     # since we don't need to transform the object back into
     # a hash after working with it.
 
-    morpher = environment.morpher(:page) do
-      map :page, :ParsedInt10, default: '1'
+    morpher = environment.hash_transformer do
+      map :page, :ParsedInt10, default: '1', key: :symbolize
     end
 
     begin
-      expect(morpher.call({           }).page).to be(1)
-      expect(morpher.call('page' => '2').page).to be(2)
+      expect(morpher.call({           })[:page]).to be(1)
+      expect(morpher.call('page' => '2')[:page]).to be(2)
     rescue Subway::Entity::Morpher::TransformError => e
-      puts e.description
+      puts e.message
     end
 
     if ENV['LOG']
 
       # Something to look at
 
+      puts
+      puts "AST:"
+      puts morpher.node.inspect
+
       input  = {}
-      output = morpher.call(input)
-      puts "input = #{input.inspect}, output = #{output.inspect}"
+      puts "input  = #{input.inspect}"
+      puts "output = #{morpher.call(input).inspect}"
 
       input  = { 'page' => '2' }
-      output = morpher.call(input)
-      puts "input = #{input.inspect}, output = #{output.inspect}"
+      puts "input  = #{input.inspect}"
+      puts "output = #{morpher.call(input).inspect}"
 
+    end
+
+    morpher = environment.object_mapper(:page) do
+      map :page, :ParsedInt10, default: '1', key: :symbolize
+    end
+
+    begin
+      expect(morpher.call({           }).page).to be(1)
+      expect(morpher.call('page' => '2').page).to be(2)
+    rescue Subway::Entity::Morpher::TransformError => e
+      puts e.message
+    end
+
+    if ENV['LOG']
+
+      # Something to look at
+
+      puts
+      puts "AST:"
+      puts morpher.node.inspect
+
+      input  = {}
+      puts "input  = #{input.inspect}"
+      puts "output = #{morpher.call(input).inspect}"
+
+      input  = { 'page' => '2' }
+      puts "input  = #{input.inspect}"
+      puts "output = #{morpher.call(input).inspect}"
 
       puts "\n-------- WORKING WITH MAPPERS ----------\n\n"
 
@@ -141,6 +173,14 @@ describe 'entity mapping' do
       }],
       'collaborators' => [ '1' ]
     }
+
+    puts
+    puts "AST (loader):"
+    puts mapper.loader.node.inspect
+
+    puts
+    puts "AST (dumper):"
+    puts mapper.dumper.node.inspect
 
     # Expect it to roundtrip
     expect(mapper.dump(mapper.load(hash))).to eql(hash)
@@ -166,8 +206,8 @@ describe 'entity mapping' do
     hash = {
       'name'            => 'snusnu',
       'gender'          => 'M',
-      'contact'         => {
-        'email'         => 'gamsnjaga@gmail.com',
+      'profile'         => {
+        'email_address' => 'gamsnjaga@gmail.com',
         'phone'         => '+436505555555'
       },
       'account'         => {
@@ -183,11 +223,11 @@ describe 'entity mapping' do
         }],
         'collaborators' => [ '1' ]
       }],
-      'addresses'       => [{
+      'residences'      => [{
         'street'        => 'Aglou 23',
         'city'          => 'Aglou',
         'country'       => 'MA',
-        'tags'          => [{
+        'categories'    => [{
           'name'        => 'beach view',
         }]
       }]
@@ -200,9 +240,17 @@ describe 'entity mapping' do
 
       # Something to look at
 
+      puts
+      puts "AST (loader):"
+      puts entity.mapper.loader.node.inspect
+
       person = entity.load(hash)
       puts 'person:'
       pp person
+
+      puts
+      puts "AST (dumper):"
+      puts entity.mapper.dumper.node.inspect
 
       hash = entity.dump(person)
       puts 'hash:'
@@ -213,7 +261,7 @@ describe 'entity mapping' do
       begin
         person = entity.load(something: :bad)
       rescue Subway::Entity::Morpher::TransformError => e
-        puts e.description
+        puts e.message
       end
 
       puts "\n------ With failing #dump -------\n\n"
@@ -221,7 +269,7 @@ describe 'entity mapping' do
       begin
         person = entity.dump(Anima.build(:id).new(id: 1))
       rescue Subway::Entity::Morpher::TransformError => e
-        puts e.description
+        puts e.message
       end
 
     end

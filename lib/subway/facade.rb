@@ -31,7 +31,7 @@ module Subway
         end
       end
 
-      def respond_to_missing?(name)
+      def respond_to_missing?(name, include_ancestors = false)
         super || @dispatcher.include?(action_name(name))
       end
 

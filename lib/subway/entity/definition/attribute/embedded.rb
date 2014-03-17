@@ -5,13 +5,29 @@ module Subway
     class Definition
       class Attribute
 
+        class OptionBuilder
+          include Concord.new(:name, :options, :default_options)
+
+          def self.call(name, options, default_options)
+            new(name, options, default_options).call
+          end
+
+          def call
+            default_options.merge({entity: name}.merge(options))
+          end
+        end # OptionBuilder
+
         class Entity < self
 
           attr_reader :entity_name
           attr_reader :block
 
+          def self.build(name, options, default_options, block)
+            new(name, OptionBuilder.call(name, options, default_options), block)
+          end
+
           def initialize(name, options, block)
-            super(name)
+            super(name, options)
             @entity_name = options.fetch(:entity, name)
             @block       = block
           end

@@ -9,61 +9,61 @@ module Subway
 
             include AbstractType
 
-            def self.new(attribute, environment)
+            abstract_method :definition
+
+            def self.new(attribute, *args)
               return super if self < Entity
               klass = attribute.embed? ? Embedded : Referenced
-              klass.new(attribute, environment)
+              klass.new(attribute, *args)
             end
 
             attr_reader :entity_name
-            attr_reader :definition
 
-            def initialize(attribute, environment)
+            def initialize(attribute, *args)
               super
               @entity_name = attribute.entity_name
             end
 
-            def call
-              s(:key_symbolize, name, Definition.call(definition, environment))
+            private
+
+            def node
+              Builder::Entity.call(builder, definition, environment)
             end
 
             class Embedded < self
 
-              def initialize(attribute, environment)
-                super
-                @definition = Subway::Entity::Definition.build(entity_name, &attribute.block)
+              def definition
+                Subway::Entity::Definition.build(
+                  entity_name,
+                  default_options,
+                  &attribute.block
+                )
               end
             end # Embedded
 
             class Referenced < self
 
-              def initialize(attribute, environment)
-                super
-                @definition = definitions[entity_name]
+              def definition
+                definitions[entity_name]
               end
             end # Referenced
           end # Entity
 
           module Collection
 
-            def self.call(attribute, environment)
-              new(attribute, environment).call
+            def self.call(attribute, *args)
+              new(attribute, *args).call
             end
 
-            def self.new(attribute, environment)
-              return super if self < Entity
+            def self.new(attribute, *args)
               klass = attribute.embed? ? Embedded : Referenced
-              klass.new(attribute, environment)
-            end
-
-            def call
-              s(:key_symbolize, name, node)
+              klass.new(attribute, *args)
             end
 
             private
 
             def node
-              s(:map, Definition.call(definition, environment))
+              s(:map, super)
             end
 
             class Embedded < Entity::Embedded

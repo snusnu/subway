@@ -7,16 +7,20 @@ module Subway
 
     PROCESSORS = {
 
+      Noop:             ->(_) { s(:input) },
+
       ParsedInt10:      ->(_) { s(:parse_int, 10) },
       ParsedInt10Array: ->(_) { s(:map, s(:parse_int, 10)) },
 
       String:           ->(_) { s(:guard, s(:primitive, String)) },
       Integer:          ->(_) { s(:guard, s(:is_a,      Integer)) },
+      Date:             ->(_) { s(:guard, s(:primitive, Date)) },
       DateTime:         ->(_) { s(:guard, s(:primitive, DateTime)) },
       Boolean:          ->(_) { s(:guard, s(:or, s(:primitive, TrueClass), s(:primitive, FalseClass))) },
 
       OString:          ->(_) { s(:guard, s(:or, s(:primitive, String),   s(:primitive, NilClass))) },
       OInteger:         ->(_) { s(:guard, s(:or, s(:is_a,      Integer),  s(:primitive, NilClass))) },
+      ODate:            ->(_) { s(:guard, s(:or, s(:primitive, Date),     s(:primitive, NilClass))) },
       ODateTime:        ->(_) { s(:guard, s(:or, s(:primitive, DateTime), s(:primitive, NilClass))) },
 
       IntArray:         ->(_) { s(:map, s(:guard, s(:is_a,      Integer))) },
@@ -25,6 +29,8 @@ module Subway
     }.freeze
 
     class Environment
+
+      include Enumerable
 
       include Anima.new(
         :definitions,
@@ -40,8 +46,18 @@ module Subway
         super(DEFAULTS.merge(attributes))
       end
 
-      def morpher(entity_name, &block)
-        Morpher.build(Definition.build(entity_name, &block), self)
+      def each(&block)
+        return to_enum(__method__) unless block
+        definitions.each(&block)
+        self
+      end
+
+      def hash_transformer(entity_name = :anonymous, &block)
+        Morpher.hash_transformer(definition(entity_name, &block), self)
+      end
+
+      def object_mapper(entity_name = :anonymous, &block)
+        Morpher.object_mapper(definition(entity_name, &block), self)
       end
 
       def mapper(entity_name)
@@ -58,6 +74,16 @@ module Subway
 
       def model_processor(definition)
         models.processor(definition)
+      end
+
+      def default_options
+        definitions.default_options
+      end
+
+      private
+
+      def definition(entity_name, &block)
+        Definition.build(entity_name, &block)
       end
 
     end # Environment

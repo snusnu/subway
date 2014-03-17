@@ -12,23 +12,31 @@ module Subway
           end
         end # AlreadyRegistered
 
-        include Lupo.collection(:entries)
+        DEFAULT_OPTIONS = { key: :neutral }.freeze
 
-        def self.build(entries = {}, &block)
-          instance = new(entries)
+        include Lupo.enumerable(:entries)
+
+        attr_reader :default_options
+
+        attr_reader :entries
+        private     :entries
+
+        def self.build(default_options = DEFAULT_OPTIONS, entries = EMPTY_HASH, &block)
+          instance = new(default_options, entries)
           instance.instance_eval(&block) if block
           instance
         end
 
-        def self.new(entries = {})
-          super
+        def initialize(default_options = DEFAULT_OPTIONS, entries = EMPTY_HASH)
+          @default_options, @entries = default_options.dup, entries.dup
         end
 
-        def register(name, &block)
+        def register(name, options = EMPTY_HASH, &block)
           if entries.key?(name)
             fail(AlreadyRegistered.new(name))
           else
-            entries[name] = Definition.build(name, &block)
+            definition_options = @default_options.merge(options)
+            entries[name] = Definition.build(name, definition_options, &block)
           end
         end
 

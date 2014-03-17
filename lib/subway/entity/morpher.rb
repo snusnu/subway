@@ -5,30 +5,35 @@ module Subway
     class Morpher
 
       class TransformError < StandardError
-        include Concord.new(:evaluation)
+        include Concord::Public.new(:evaluation)
 
-        private
-
-        def method_missing(name, *args, &block)
-          evaluation.public_send(name)
-        end
-
-        def respond_to?(name, include_ancestors = true)
-          evaluation.respond_to?(name, include_ancestors)
+        def message
+          evaluation.description
         end
       end
 
       include Concord.new(:evaluator)
 
-      def self.build(definition, environment)
-        node = Builder::Definition.call(definition, environment)
+      def self.hash_transformer(definition, environment)
+        transformer(:hash, definition, environment)
+      end
+
+      def self.object_mapper(definition, environment)
+        transformer(:object, definition, environment)
+      end
+
+      def self.transformer(name, definition, environment)
+        compile(Builder::Entity.call(name, definition, environment))
+      end
+
+      def self.compile(node)
         new(::Morpher.compile(node))
       end
 
       def call(input)
         evaluator.call(input)
       rescue ::Morpher::Evaluator::Transformer::TransformError
-        raise(TransformError, evaluation(input))
+        raise(TransformError.new(evaluation(input)))
       end
 
       def evaluation(input)
@@ -37,6 +42,10 @@ module Subway
 
       def inverse
         self.class.new(evaluator.inverse)
+      end
+
+      def node
+        evaluator.node
       end
 
     end # Morpher
