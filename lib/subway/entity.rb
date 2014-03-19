@@ -26,6 +26,10 @@ module Subway
       })
     end
 
+    def self.definition_registry(options = EMPTY_HASH)
+      Definition::Registry.new(options)
+    end
+
     def self.build(definition, environment)
       name   = definition.entity_name
       model  = environment.model(name)
