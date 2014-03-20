@@ -1,5 +1,9 @@
 # encoding: utf-8
 
+require 'concord'
+require 'adamantium'
+require 'bcrypt'
+
 module Subway
 
   # Provides password encryption using bcrypt
