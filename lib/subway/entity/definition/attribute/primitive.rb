@@ -51,18 +51,6 @@ module Subway
             end
 
             def call
-              options = if @default_primitive
-                NULL_PROCESSOR
-              elsif @configured_primitive
-                args.first
-              elsif @referenced_processor
-                { processor: args.first }
-              elsif @configured_processor
-                args.last.merge(processor: args.first)
-              else
-                raise InternalError.new(args)
-              end
-
               @default_options.merge(options)
             end
 
@@ -100,6 +88,19 @@ module Subway
               args.length == 2 && args.first.is_a?(Symbol) && args.last.is_a?(Hash)
             end
 
+            def options
+              if @default_primitive
+                NULL_PROCESSOR
+              elsif @configured_primitive
+                args.first
+              elsif @referenced_processor
+                { processor: args.first }
+              elsif @configured_processor
+                args.last.merge(processor: args.first)
+              else
+                raise InternalError.new(args)
+              end
+            end
           end # OptionBuilder
 
           def self.build(name, default_options, args)
