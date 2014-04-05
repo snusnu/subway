@@ -26,12 +26,9 @@ module Subway
             end # InternalError
 
             include Equalizer.new(:args)
+            include Procto.call
 
             NULL_PROCESSOR = { processor: :Noop }
-
-            def self.call(default_options, args)
-              new(default_options, args).call
-            end
 
             attr_reader :args
             protected   :args

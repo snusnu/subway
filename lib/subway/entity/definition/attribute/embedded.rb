@@ -7,10 +7,7 @@ module Subway
 
         class OptionBuilder
           include Concord.new(:name, :options, :default_options)
-
-          def self.call(name, options, default_options)
-            new(name, options, default_options).call
-          end
+          include Procto.call
 
           def call
             default_options.merge({entity: name}.merge(options))
