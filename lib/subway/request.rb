@@ -14,9 +14,9 @@ module Subway
     HTTP_X_FORWARDED_FOR_RACK_ENV_KEY = 'HTTP_X_FORWARDED_FOR'.freeze
 
     LOCALHOST_REGEXP = Regexp.union([
-      /^127\.0\.0\.\d{1,3}$/,
-      /^::1$/,
-      /^0:0:0:0:0:0:0:1(%.*)?$/
+      /\A127\.0\.0\.\d{1,3}\z/,
+      /\A::1\z/,
+      /\A0:0:0:0:0:0:0:1(%.*)?\z/
     ]).freeze
 
     def self.coerce(raw)
