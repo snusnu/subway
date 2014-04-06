@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'rack',        '~> 1.5.2'
   gem.add_dependency 'substation',  '~> 0.0.10'
+  gem.add_dependency 'ipaddress',   '~> 0.8.0'
   gem.add_dependency 'request',     '~> 0.0.4'
   gem.add_dependency 'response',    '~> 0.0.3'
   gem.add_dependency 'anima',       '~> 0.2.0'

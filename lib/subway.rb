@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'substation'
+require 'ipaddress'
 require 'request'
 require 'response'
 require 'anima'
