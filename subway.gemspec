@@ -31,6 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'lupo',        '~> 0.0.1'
   gem.add_dependency 'procto',      '~> 0.0.2'
   gem.add_dependency 'morpher',     '~> 0.2.0'
+  gem.add_dependency 'majoun',      '~> 0.0.2'
 
   gem.add_development_dependency 'bundler', '~> 1.5', '>= 1.5.2'
 end

@@ -16,7 +16,7 @@ gem 'morpher',    git: "#{MBJ}/morpher.git",       branch: MASTER
 gem 'substation', git: "#{SNUSNU}/substation.git", branch: MASTER
 gem 'request',    git: "#{SNUSNU}/request.git",    branch: 'cookie'
 gem 'response',   git: "#{SNUSNU}/response.git",   branch: 'cookie'
-gem 'cookie',     git: "#{SNUSNU}/cookie.git",     branch: MASTER
+gem 'majoun',     git: "#{SNUSNU}/cookie.git",     branch: MASTER
 gem 'lupo',       git: "#{SNUSNU}/lupo.git",       branch: MASTER
 gem 'procto',     git: "#{SNUSNU}/procto.git",     branch: MASTER
 
