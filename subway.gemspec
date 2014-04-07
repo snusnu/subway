@@ -33,5 +33,13 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'morpher',     '~> 0.2.0'
   gem.add_dependency 'majoun',      '~> 0.0.2'
 
-  gem.add_development_dependency 'bundler', '~> 1.5', '>= 1.5.2'
+  gem.add_dependency 'axiom',            '~> 0.2.0'
+  gem.add_dependency 'axiom-do-adapter', '~> 0.2.0'
+  gem.add_dependency 'axiom-types',      '~> 0.1.1'
+  gem.add_dependency 'axiom-optimizer',  '~> 0.2.0'
+
+  gem.add_development_dependency 'bundler',             '~> 1.5', '>= 1.5.2'
+  gem.add_development_dependency 'dm-core',             '~> 1.2.0'
+  gem.add_development_dependency 'dm-migrations',       '~> 1.2.0'
+  gem.add_development_dependency 'dm-postgres-adapter', '~> 1.2.0'
 end
