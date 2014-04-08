@@ -10,24 +10,25 @@ module Subway
         include Anima.new(:name, :location, :box)
 
         def call(request)
-          cookie = request.input.cookies.get(name)
-          cookie ? success(credentials(cookie)) : error(error_response(cookie))
+          if cookie = request.input.cookies.get(name)
+            credentials = cookie.decode.decrypt(box).value rescue nil
+            credentials ? success(credentials) : error(error_response)
+          else
+            error(error_response)
+          end
         end
 
         private
 
-        def credentials(cookie)
-          cookie.decode.decrypt(box).value
-        end
-
-        def error_response(cookie)
+        def error_response
           Response::Data::Redirect.new(
-            :cookie   => cookie,
+            :cookie   => nil,
             :location => location,
             :messages => EMPTY_ARRAY
           )
         end
-      end
-    end
-  end
-end
+
+      end # Loader
+    end # Cookie
+  end # Handler
+end# Subway
