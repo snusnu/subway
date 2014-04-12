@@ -18,9 +18,13 @@ module Subway
       attr_reader :body
       private     :body
 
+      attr_reader :env
+      private     :env
+
       def initialize(response)
         @response = response
         @body     = @response.data
+        @env      = @response.request.env
       end
     end
   end
