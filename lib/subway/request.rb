@@ -139,8 +139,5 @@ module Subway
       end
     end # class Authenticated
 
-    class Sanitized < Authenticated
-      include anima.add(:params)
-    end
   end # class Request
 end # module Subway
