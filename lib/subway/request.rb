@@ -50,6 +50,7 @@ module Subway
     def body
       raw.body
     end
+    memoize :body, freezer: :noop
 
     def subdomains(domain)
       if localhost? || valid_host?
