@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = %w[LICENSE README.md TODO.md]
   gem.license          = 'MIT'
 
-  gem.add_dependency 'rack',        '~> 1.5.2'
+  gem.add_dependency 'rack',        '~> 1.5'
   gem.add_dependency 'substation',  '~> 0.0.10'
   gem.add_dependency 'ipaddress',   '~> 0.8.0'
   gem.add_dependency 'request',     '~> 0.0.4'
