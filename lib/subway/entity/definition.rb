@@ -8,6 +8,7 @@ module Subway
       include Concord.new(:entity_name, :default_options, :header)
 
       public :entity_name
+      public :default_options
 
       def self.build(entity_name, default_options = EMPTY_HASH, header = EMPTY_ARRAY, &block)
         instance = new(entity_name, default_options, header)

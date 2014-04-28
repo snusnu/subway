@@ -46,7 +46,7 @@ module Subway
 
           def call
             s(:block,
-              s(:guard, s(:primitive, Hash)),
+              *guards,
               *defaults,
               s(:hash_transform, *attributes),
               *processors
@@ -62,6 +62,14 @@ module Subway
           def defaults
             values = definition.defaults
             values.any? ? [ s(:merge, values) ] : EMPTY_ARRAY
+          end
+
+          def guards
+            if guard = definition.default_options[:guard]
+              [s(:guard, s(:primitive, guard))]
+            else
+              EMPTY_ARRAY
+            end
           end
 
         end # Entity

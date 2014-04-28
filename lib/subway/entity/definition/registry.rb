@@ -12,7 +12,7 @@ module Subway
           end
         end # AlreadyRegistered
 
-        DEFAULT_OPTIONS = { key: :neutral }.freeze
+        DEFAULT_OPTIONS = { key: :neutral, guard: Hash }.freeze
 
         include Lupo.enumerable(:entries)
 
