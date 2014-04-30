@@ -176,7 +176,11 @@ module Subway
 
     def self.relations(adapter, schema)
       schema.each_with_object({}) { |(name, relation), hash|
-        hash[name] = Axiom::Relation::Gateway.new(adapter, relation)
+        if relation.respond_to?(:name)
+          hash[name] = Axiom::Relation::Gateway.new(adapter, relation)
+        else
+          hash[name] = relation
+        end
       }
     end
 

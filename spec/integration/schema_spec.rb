@@ -62,17 +62,24 @@ describe Subway::Schema do
   relation_schema = Subway::Relation::Schema.build(base_relations) do
 
     relation :actors do
-      people.join(accounts)
+      people.join(accounts).wrap(account: [:account_id, :email])
     end
 
     relation :person_details do
-      actors.join(tasks.rename(name: :task_name))
+      actors.
+        join(tasks.rename(name: :task_name)).
+        group(tasks: [:task_id, :task_name])
+
     end
 
     relation :task_details do
       tasks.
         join(people.rename(name: :person_name)).
-        join(accounts)
+        join(accounts).
+        wrap(
+          account: [:account_id, :email],
+          person:  [:person_id, :person_name, :account]
+        )
     end
 
   end
@@ -186,20 +193,15 @@ describe Subway::Schema do
     person  = schema[:people].sort.one
     task    = schema[:tasks].sort.one
 
-    schema[:actors].wrap(account: [:account_id, :email]).each do |actor|
+    schema[:actors].each do |actor|
+      puts actor.inspect
       expect(actor.id).to eq(person.id)
       expect(actor.name).to eq(person.name)
       expect(actor.account.id).to eq(account.id)
       expect(actor.account.email).to eq(account.email)
     end
 
-    task_details = schema[:task_details].
-      wrap(
-        account: [:account_id, :email],
-        person:  [:person_id, :person_name, :account]
-      )
-
-    task_details.each do |detailed_task|
+    schema[:task_details].each do |detailed_task|
       expect(detailed_task.id).to eq(task.id)
       expect(detailed_task.name).to eq(task.name)
       expect(detailed_task.person.id).to eq(person.id)
@@ -208,11 +210,7 @@ describe Subway::Schema do
       expect(detailed_task.person.account.email).to eql(account.email)
     end
 
-    person_details = schema[:person_details].
-      group(tasks: [:task_id, :task_name]).
-      wrap(account: [:account_id, :email])
-
-    person_details.each do |detailed_person|
+    schema[:person_details].each do |detailed_person|
       expect(detailed_person.id).to eq(person.id)
       expect(detailed_person.name).to eq(person.name)
       expect(detailed_person.account.id).to eq(account.id)
