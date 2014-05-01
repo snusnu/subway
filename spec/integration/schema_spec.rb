@@ -62,7 +62,9 @@ describe Subway::Schema do
   relation_schema = Subway::Relation::Schema.build(base_relations) do
 
     relation :actors do
-      people.join(accounts).wrap(account: [:account_id, :email])
+      people.
+        join(accounts).
+        wrap(account: [:account_id, :email])
     end
 
     relation :person_details do
@@ -165,7 +167,7 @@ describe Subway::Schema do
     map :actors,         :actor
   end
 
-  it 'provides access to axiom gateway base relations' do
+  it 'provides access to base relations' do
 
     account = schema[:accounts].sort.one
     expect(account.id).to_not be(nil)
@@ -176,50 +178,43 @@ describe Subway::Schema do
     expect(person.name).to eq('snusnu')
     expect(person.account_id).to eql(account.id)
 
-    schema[:accounts].each do |object|
-      expect(object.id).to_not be(nil)
-      expect(object.email).to eq('test@test.com')
-    end
+    a = schema[:accounts].to_a.first
+    expect(a.id).to_not be(nil)
+    expect(a.email).to eq('test@test.com')
 
-    schema[:people].each do |object|
-      expect(object.id).to_not be(nil)
-      expect(object.name).to eq('snusnu')
-      expect(object.account_id).to eql(account.id)
-    end
+    p = schema[:people].to_a.first
+    expect(p.id).to_not be(nil)
+    expect(p.name).to eq('snusnu')
+    expect(p.account_id).to eql(account.id)
   end
 
-  it 'provides access to axiom gateway relations' do
+  it 'provides access to virtual relations' do
     account = schema[:accounts].sort.one
     person  = schema[:people].sort.one
     task    = schema[:tasks].sort.one
 
-    schema[:actors].each do |actor|
-      puts actor.inspect
-      expect(actor.id).to eq(person.id)
-      expect(actor.name).to eq(person.name)
-      expect(actor.account.id).to eq(account.id)
-      expect(actor.account.email).to eq(account.email)
-    end
+    a = schema[:actors].to_a.first
+    expect(a.id).to eq(person.id)
+    expect(a.name).to eq(person.name)
+    expect(a.account.id).to eq(account.id)
+    expect(a.account.email).to eq(account.email)
 
-    schema[:task_details].each do |detailed_task|
-      expect(detailed_task.id).to eq(task.id)
-      expect(detailed_task.name).to eq(task.name)
-      expect(detailed_task.person.id).to eq(person.id)
-      expect(detailed_task.person.name).to eq(person.name)
-      expect(detailed_task.person.account.id).to eql(account.id)
-      expect(detailed_task.person.account.email).to eql(account.email)
-    end
+    dt = schema[:task_details].to_a.first
+    expect(dt.id).to eq(task.id)
+    expect(dt.name).to eq(task.name)
+    expect(dt.person.id).to eq(person.id)
+    expect(dt.person.name).to eq(person.name)
+    expect(dt.person.account.id).to eql(account.id)
+    expect(dt.person.account.email).to eql(account.email)
 
-    schema[:person_details].each do |detailed_person|
-      expect(detailed_person.id).to eq(person.id)
-      expect(detailed_person.name).to eq(person.name)
-      expect(detailed_person.account.id).to eq(account.id)
-      expect(detailed_person.account.email).to eq(account.email)
+    dp = schema[:person_details].to_a.first
+    expect(dp.id).to eq(person.id)
+    expect(dp.name).to eq(person.name)
+    expect(dp.account.id).to eq(account.id)
+    expect(dp.account.email).to eq(account.email)
 
-      detailed_person.tasks.each do |person_task|
-        expect(person_task.id).to eq(task.id)
-        expect(person_task.name).to eq(task.name)
-      end
-    end
+    t = dp.tasks.to_a.first
+    expect(t.id).to eq(task.id)
+    expect(t.name).to eq(task.name)
   end
 end
