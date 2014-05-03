@@ -281,19 +281,25 @@ module Subway
 
   class Schema
 
-    class Definition
+    class Builder
 
-      def self.call(relations, mappers, &block)
-        new(relations, mappers, &block).entries
+      include Concord.new(:relations, :mappers, :entries)
+
+      def self.call(relations, mappers, entries, &block)
+        new(relations, mappers, entries, &block).call
       end
 
-      attr_reader :entries
+      private_class_method :new
 
-      def initialize(relations, mappers, &block)
-        @relations, @mappers = relations, mappers
-        @entries = {}
-        instance_eval(&block) if block
+      def initialize(*args, &block)
+        super(*args); instance_eval(&block)
       end
+
+      def call
+        Schema.new(entries)
+      end
+
+      private
 
       def map(relation_name, mapper_name)
         entries[relation_name] = relation(relation_name, mapper_name)
@@ -303,17 +309,12 @@ module Subway
         Relation.new(relations[relation_name], mappers.mapper(mapper_name))
       end
 
-      private
-
-      attr_reader :relations
-      attr_reader :mappers
-
-    end # Definition
+    end # Builder
 
     include Concord.new(:relations)
 
-    def self.build(database, mappers, &block)
-      new(Definition.call(database, mappers, &block))
+    def self.build(database, mappers, entries = EMPTY_HASH, &block)
+      Builder.call(database, mappers, entries.dup, &block)
     end
 
     def [](relation_name)
