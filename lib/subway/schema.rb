@@ -17,6 +17,9 @@ module Subway
       abstract_method :name
       abstract_method :header
 
+      private :name
+      private :header
+
       def call
         Axiom::Relation::Base.new(name, header)
       end
@@ -25,104 +28,174 @@ module Subway
 
         include Concord.new(:model)
 
+        private
+
         def name
-          model.storage_names[:default].to_sym
+          model.storage_name(:default).to_sym
         end
 
         def header
           model.properties.map { |p| [p.field, p.primitive] }
         end
-      end # DataMapper
+      end # DM
     end # Builder
 
     class Schema
-      class Builder
+      class Definition
+        class Builder
 
-        class DM < self
+          class DM < self
 
-          include Concord.new(:models, :relation_builder)
+            include Concord.new(:models, :relation_builder)
+            include Procto.call
+
+            def initialize(models, relation_builder = Relation::Builder::DM)
+              super
+            end
+
+            def call
+              models.each_with_object({}) { |model, hash|
+                relation = relation_builder.call(model)
+                hash[relation.name] = relation
+              }
+            end
+
+          end
+
+          class Context
+
+            include Concord::Public.new(:base, :virtual)
+
+            def self.call(base = EMPTY_HASH, virtual = EMPTY_HASH, &block)
+              new(base.dup, virtual.dup).call(&block)
+            end
+
+            def call(&block)
+              instance_eval(&block)
+              self
+            end
+
+            private
+
+            def base_relation(name, &block)
+              raise NotImplementedError
+            end
+
+            def relation(name, &block)
+              virtual[name] = block
+            end
+          end # Context
+
+          include Adamantium::Flat
+          include Concord.new(:base, :virtual, :block)
           include Procto.call
 
-          def initialize(models, relation_builder = Relation::Builder::DM)
-            super
+          def call
+            Definition.new(Context.call(base, virtual, &block))
+          end
+
+        end # Builder
+
+        class Context < BasicObject
+
+          def self.call(relations, block)
+            new(relations, block).call
+          end
+
+          def initialize(relations, block)
+            @relations, @block = relations, block
           end
 
           def call
-            models.each_with_object({}) { |model, hash|
-              relation = relation_builder.call(model)
-              hash[relation.name] = relation
-            }
+            instance_eval(&@block).optimize
           end
 
-        end
-
-        class Context
-
-          include Concord::Public.new(:relations)
-
-          def self.call(relations = {}, &block)
-            new(relations, &block).relations
-          end
-
-          def initialize(relations, &block)
-            super
-            instance_eval(&block)
+          def inspect
+            @relations.inspect
           end
 
           private
 
-          def relation(name, &block)
-            relations[name] = Schema::Context.call(relations, block)
+          def method_missing(name, *args, &block)
+            super unless @relations.key?(name)
+            @relations[name]
+          end
+
+          def respond_to_missing?(name, include_private = false)
+            @relations.key?(name) or super
           end
         end # Context
 
-        include Adamantium::Flat
-        include Concord.new(:relations, :block)
-        include Procto.call
+        class Resolver
 
-        def call
-          Schema.new(Context.call(relations, &block))
+          include Concord.new(:schema_definition)
+          include Adamantium::Flat
+          include Procto.call
+
+          def initialize(*)
+            super
+            @base_relations    = schema_definition.base_relations
+            @virtual_relations = schema_definition.virtual_relations
+          end
+
+          def call
+            base_relations.merge(virtual_relations)
+          end
+
+          private
+
+          def base_relations
+            @base_relations.each_with_object({}) { |(name, relation), registry|
+              registry[name] = base_relation(name, relation)
+            }
+          end
+          memoize :base_relations
+
+          def virtual_relations
+            relations = base_relations.dup # minimal hash instance creation
+            @virtual_relations.each_with_object({}) { |(name, relation), registry|
+              registry[name]  = virtual_relation(relations, relation)
+              relations[name] = registry[name] # update the lookup cache
+            }
+          end
+          memoize :virtual_relations
+
+          def base_relation(_name, relation)
+            relation # By default this is a noop
+          end
+
+          def virtual_relation(registry, block)
+            Definition::Context.call(registry, block)
+          end
+
+        end # Resolver
+
+        include Concord.new(:context)
+
+        attr_reader :base_relations
+        attr_reader :virtual_relations
+
+        def initialize(*)
+          super
+          @base_relations    = context.base
+          @virtual_relations = context.virtual
         end
-      end # Builder
 
-      class Context < BasicObject
-
-        def self.call(relations, block)
-          new(relations, block).call
-        end
-
-        def initialize(relations, block)
-          @relations, @block = relations, block
-        end
-
-        def call
-          instance_eval(&@block).optimize
-        end
-
-        def inspect
-          @relations.inspect
-        end
-
-        private
-
-        def method_missing(name, *args, &block)
-          super unless @relations.key?(name)
-          @relations[name]
-        end
-
-        def respond_to_missing?(name, include_private = false)
-          @relations.key?(name) or super
-        end
-      end # Context
+      end # Definition
 
       include Lupo.collection(:relations)
 
-      def self.build(relations, &block)
-        Builder.call(relations, block)
+      def self.define(base_relations, virtual_relations = EMPTY_HASH, &block)
+        Definition::Builder.call(base_relations, virtual_relations, block)
+      end
+
+      def self.build(base_relations, virtual_relations = EMPTY_HASH, &block)
+        definition = define(base_relations, virtual_relations, &block)
+        new(definition)
       end
 
       def [](name)
-        relations.fetch(name)
+        @relations.fetch(name)
       end
     end # Schema
 
@@ -168,24 +241,40 @@ module Subway
 
   class Database
 
-    include Concord.new(:name, :adapter, :relation_schema)
+    class Builder < Relation::Schema::Definition::Resolver
 
-    def self.build(name, adapter, schema)
-      new(name, adapter, relations(adapter, schema))
-    end
+      def initialize(name, adapter, schema_definition)
+        super(schema_definition)
+        @name, @adapter = name, adapter
+      end
 
-    def self.relations(adapter, schema)
-      schema.each_with_object({}) { |(name, relation), hash|
-        if relation.respond_to?(:name)
-          hash[name] = Axiom::Relation::Gateway.new(adapter, relation)
-        else
-          hash[name] = relation
-        end
-      }
+      def call
+        Database.new(name, adapter, super)
+      end
+
+      private
+
+      attr_reader :name
+      attr_reader :adapter
+
+      def base_relation(_, relation)
+        Axiom::Relation::Gateway.new(adapter, relation)
+      end
+
+    end # Builder
+
+    include Concord.new(:name, :adapter, :relations)
+
+    def self.build(name, adapter, schema_definition)
+      Builder.call(name, adapter, schema_definition)
     end
 
     def [](name)
-      relation_schema.fetch(name)
+      relations.fetch(name)
+    end
+
+    def query(&block)
+      Relation::Schema::Definition::Context.call(relations, block)
     end
 
   end # Database
@@ -223,8 +312,8 @@ module Subway
 
     include Concord.new(:relations)
 
-    def self.build(relations, mappers, &block)
-      new(Definition.call(relations, mappers, &block))
+    def self.build(database, mappers, &block)
+      new(Definition.call(database, mappers, &block))
     end
 
     def [](relation_name)

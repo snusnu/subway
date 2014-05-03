@@ -18,20 +18,22 @@ describe Subway::Schema do
   uri = 'postgres://localhost/test'.freeze
 
   DataMapper.logger = DataMapper::Logger.new($stdout, :debug) if ::ENV['LOG']
-  DataMapper.setup(:default, uri)
+  adapter = DataMapper.setup(:default, uri)
+  adapter.field_naming_convention = DataMapper::NamingConventions::Field::FQN
 
   class Account
     include DataMapper::Resource
 
-    property :id,    Serial, field: 'account_id'
+    property :id,    Serial
     property :email, String
   end
 
   class Person
     include DataMapper::Resource
 
-    property :id,   Serial, field: 'person_id'
-    property :name, String
+    property :id,         Serial
+    property :name,       String
+    property :account_id, Integer, field: 'account_id'
 
     belongs_to :account
     has n, :tasks
@@ -40,8 +42,9 @@ describe Subway::Schema do
   class Task
     include DataMapper::Resource
 
-    property :id,   Serial, field: 'task_id'
-    property :name, String
+    property :id,        Serial
+    property :name,      String
+    property :person_id, Integer, field: 'person_id'
 
     belongs_to :person
   end
@@ -57,29 +60,28 @@ describe Subway::Schema do
   # (2) Initialize a new Subway::Relation::Schema
 
   models          = DataMapper::Model.descendants
-  base_relations  = Subway::Relation::Schema::Builder::DM.call(models)
+  base_relations  = Subway::Relation::Schema::Definition::Builder::DM.call(models)
 
-  relation_schema = Subway::Relation::Schema.build(base_relations) do
+  schema_definition = Subway::Relation::Schema.define(base_relations) do
 
     relation :actors do
       people.
         join(accounts).
-        wrap(account: [:account_id, :email])
+        wrap(account: [:account_id, :account_email])
     end
 
     relation :person_details do
       actors.
-        join(tasks.rename(name: :task_name)).
+        join(tasks).
         group(tasks: [:task_id, :task_name])
-
     end
 
     relation :task_details do
       tasks.
-        join(people.rename(name: :person_name)).
+        join(people).
         join(accounts).
         wrap(
-          account: [:account_id, :email],
+          account: [:account_id, :account_email],
           person:  [:person_id, :person_name, :account]
         )
     end
@@ -89,7 +91,7 @@ describe Subway::Schema do
   # (3) Connect the relation schema to a database
 
   adapter  = Axiom::Adapter::DataObjects.new(uri)
-  database = Subway::Database.build(:test, adapter, relation_schema)
+  database = Subway::Database.build(:test, adapter, schema_definition)
 
   # (4) Define domain DTOs
 
@@ -97,27 +99,27 @@ describe Subway::Schema do
 
     register :account do
       map :id,    :Integer, from: :account_id
-      map :email, :String
+      map :email, :String,  from: :account_email
     end
 
     register :person do
       map :id,         :Integer, from: :person_id
-      map :account_id, :Integer
-      map :name,       :String
+      map :account_id, :Integer, from: :account_id
+      map :name,       :String,  from: :person_name
     end
 
     register :task do
       map :id,   :Integer, from: :task_id
-      map :name, :String
+      map :name, :String,  from: :task_name
     end
 
     register :detailed_person do
       map :id,         :Integer, from: :person_id
-      map :name,       :String
+      map :name,       :String,  from: :person_name
 
       wrap :account, entity: :'detailed_person.account' do
         map :id,    :Integer, from: :account_id
-        map :email, :String
+        map :email, :String,  from: :account_email
       end
 
       group :tasks, entity: :'detailed_person.task' do
@@ -128,7 +130,7 @@ describe Subway::Schema do
 
     register :detailed_task do
       map :id,         :Integer, from: :task_id
-      map :name,       :String
+      map :name,       :String,  from: :task_name
 
       wrap :person, entity: :'task.person' do
         map :id,   :Integer, from: :person_id
@@ -136,18 +138,18 @@ describe Subway::Schema do
 
         wrap :account, entity: :'task.person.account' do
           map :id,    :Integer, from: :account_id
-          map :email, :String
+          map :email, :String,  from: :account_email
         end
       end
     end
 
     register :actor do
       map :id,         :Integer, from: :person_id
-      map :name,       :String
+      map :name,       :String,  from: :person_name
 
       wrap :account, entity: :'actor.account' do
         map :id,       :Integer, from: :account_id
-        map :email,    :String
+        map :email,    :String,  from: :account_email
       end
     end
 
