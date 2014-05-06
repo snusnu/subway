@@ -23,6 +23,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'request',     '~> 0.0.4'
   gem.add_dependency 'response',    '~> 0.0.3'
   gem.add_dependency 'anima',       '~> 0.2.0'
+  gem.add_dependency 'concord',     '~> 0.1.5'
   gem.add_dependency 'mustache',    '~> 0.99.4'
   gem.add_dependency 'multi_json',  '~> 1.9.2'
   gem.add_dependency 'rbnacl',      '~> 2.0.0'
