@@ -21,6 +21,14 @@ module Subway
           body.to_h
         end
 
+        class Created < self
+          private
+
+          def http_response
+            super.with_status(::Response::Status::CREATED)
+          end
+        end
+
         class NotAuthorized < self
           private
 
