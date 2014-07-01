@@ -9,6 +9,28 @@ module Subway
   # Provides password encryption using bcrypt
   class Password
 
+    class Generator
+
+      include Concord.new(:plaintext)
+
+      def self.call(plaintext)
+        new(default_password(plaintext)).call
+      end
+
+      def self.default_password?(plaintext, initial_default)
+        plaintext == default_password(initial_default)
+      end
+
+      def self.default_password(plaintext)
+        Digest::MD5.hexdigest(plaintext).chars.to_a[4..13].join(EMPTY_STRING)
+      end
+
+      def call
+        Subway::Password.create(plaintext)
+      end
+
+    end # Generator
+
     include Concord.new(:bcrypt_password)
     include Adamantium
 
