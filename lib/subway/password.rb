@@ -26,7 +26,7 @@ module Subway
       end
 
       def call
-        Subway::Password.create(plaintext)
+        Password.create(plaintext)
       end
 
     end # Generator
