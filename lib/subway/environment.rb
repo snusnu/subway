@@ -18,7 +18,8 @@ module Subway
     private
 
     def method_missing(name, *args, &block)
-      services.fetch(name, super)
+      return super unless services.key?(name)
+      services[name]
     end
 
     def respond_to_missing?(name, include_private = false)
