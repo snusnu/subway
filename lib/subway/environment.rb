@@ -12,7 +12,7 @@ module Subway
     end
 
     def register(other_services)
-      self.class.new(services.merge(other_services))
+      self.class.new(name, services.merge(other_services))
     end
 
     private
