@@ -15,12 +15,12 @@ module Subway
       memoize(name)
     end
 
-    def method_missing(method, *args, &block)
-      @data.public_send(method, *args, &block)
+    def method_missing(name, *args, &block)
+      @data.public_send(name, *args, &block)
     end
 
-    def respond_to?(method, include_private = false)
-      super || @data.respond_to?(method, include_private)
+    def respond_to?(name, include_private = false)
+      super || @data.respond_to?(name, include_private)
     end
 
     class Collection < self
