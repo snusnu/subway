@@ -32,8 +32,6 @@ module Subway
 
       alias_method :members, :data
 
-      protected :members
-
       def each
         return to_enum unless block_given?
         members.each { |member| yield self.class.member.new(member) }
