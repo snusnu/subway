@@ -30,13 +30,13 @@ module Subway
         @member = presenter
       end
 
-      alias_method :entries, :data
+      alias_method :members, :data
 
-      protected :entries
+      protected :members
 
       def each
         return to_enum unless block_given?
-        entries.each { |entry| yield self.class.member.new(entry) }
+        members.each { |member| yield self.class.member.new(member) }
         self
       end
     end
