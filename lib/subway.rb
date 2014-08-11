@@ -18,7 +18,7 @@ require 'morpher'
 module Subway
 
   # Represent an undefined argument
-  Undefined = Class.new.freeze
+  Undefined = Module.new.freeze
 
   # An empty hash useful for (default} parameters
   EMPTY_HASH = {}.freeze
