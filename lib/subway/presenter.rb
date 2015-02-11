@@ -8,9 +8,8 @@ module Subway
     include Adamantium::Flat
 
     def self.group(name, klass = nil)
-      collection_presenter = klass || self::Collection
       define_method(name) do
-        collection_presenter.new(super())
+        (klass || self.class::Collection).new(super())
       end
       memoize(name)
     end
